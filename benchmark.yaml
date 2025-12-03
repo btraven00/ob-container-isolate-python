@@ -1,0 +1,23 @@
+id: legacy_bench
+version: "0.0.1"
+benchmarker: "btraven"
+software_environments:
+  py27:
+    description: "ancient python with virtualenv"
+    apptainer: py27.sif
+software_backend: apptainer
+
+stages:
+  - id: single
+    modules:
+      - id: module
+        name: "dummy module"
+        software_environment: py27
+        repository:
+          url: .
+          # url: https://github.com/btraven00/ob-container-isolate-python
+          commit: main
+
+    outputs:
+      - id: test
+        path: "test.txt"
