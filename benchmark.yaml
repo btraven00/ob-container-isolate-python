@@ -14,9 +14,10 @@ stages:
         name: "dummy module"
         software_environment: py27
         repository:
-          url: .
-          # url: https://github.com/btraven00/ob-container-isolate-python
-          commit: main
+          url: https://github.com/btraven00/ob-container-isolate-python
+          commit: 67f5408
+ 
+
 
     outputs:
       - id: test

@@ -1,3 +1,4 @@
 snakemake.log
 .snakemake
 py27.sif
+out/

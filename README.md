@@ -1,9 +1,8 @@
 # Ancient Python 2.7 with virtualenv & Apptainer
 
-This project demonstrates how to use the modern package manager uv to bootstrap
-a legacy Python 2.7 environment inside a container. This is ideal for archiving
-old scientific workflows or running legacy scripts on modern HPC clusters using
-Apptainer.
+This project demonstrates how to bootstrap a legacy Python 2.7 environment
+inside a container. This is ideal for archiving old scientific workflows or
+running legacy scripts on modern HPC clusters using Apptainer.
 
 The motivation is to allow omnibenchmark users to run legacy Python 2.7 scripts
 and bypass a current limitation in omnibenchmark's use of snakemake, where 
@@ -13,7 +12,24 @@ of dependencies required by omnibenchmark itself.
 If you need to support other pythons, you might consider to make your life easier
 and adopt uv as part of the workflow instead (only for python >= 3.8).
 
-1. Build the Docker Image
+## Production Usage Note
+
+**Important**: The `legacy_script.py` included in this Docker image is for debugging 
+and testing purposes only. In production, your actual legacy scripts should be 
+**mounted externally** by Apptainer/Singularity from the host filesystem, not 
+embedded in the container image.
+
+This approach provides:
+- **Flexibility**: Update scripts without rebuilding containers
+- **Separation of concerns**: Container provides environment, host provides code
+- **Easier debugging**: Scripts remain editable on the host
+
+Example production usage:
+```bash
+apptainer exec --bind /path/to/your/scripts:/mnt/scripts py27.sif python2.7 /mnt/scripts/your_legacy_script.py
+```
+
+## 1. Build the Docker Image
 
 First, build the standard Docker image to verify everything works locally.
 
@@ -40,7 +56,7 @@ This print statement uses Python 2 syntax (no parentheses).
 xrange(5) object created successfully: xrange(5)
 ```
 
-2. Convert to Apptainer (Singularity)
+## 2. Convert to Apptainer (Singularity)
 
 If you have apptainer installed on your machine (linux) or are running this on an HPC cluster, you can pull directly from your local Docker daemon or a registry.
 
@@ -63,7 +79,7 @@ Build Apptainer image from the tarball:
 apptainer build py27.sif docker-archive://py27.tar
 
 
-3. Run with Apptainer
+## 3. Run with Apptainer
 
 You can execute specific commands using the internal Python 2.7:
 

@@ -49,28 +49,24 @@ WORKDIR /app
 
 COPY requirements-legacy.pip .
 
-# Install compatible pydantic-core and omnibenchmark in Python 3.12 (system)
-RUN pip3.12 install --upgrade pip && \
-    pip3.12 install pydantic-core==2.23.4 pydantic==2.5.0 && \
-    pip3.12 install omnibenchmark==0.3.2 snakemake
-
 # Create Python 2.7 virtual environment and install dependencies
 RUN /usr/local/python2.7/bin/pip install virtualenv && \
     /usr/local/python2.7/bin/virtualenv .venv && \
     .venv/bin/pip install -r requirements-legacy.pip
 
 # Make Python 3.12 the default for Snakemake compatibility
-# Legacy scripts will use explicit shebang #!/usr/local/bin/python2.7
-ENV PATH="/usr/local/bin:$PATH"
+# Legacy scripts will use explicit python2.7
+ENV PATH="/usr/local/bin:/usr/local/python2.7/bin:/app/.venv/bin:$PATH"
 
-# Copy the legacy application code
+# Copy the legacy application code and entrypoint
 COPY legacy_script.py .
+COPY entrypoint.sh .
 
-# Make legacy script executable
-RUN chmod +x legacy_script.py
+# Make scripts executable
+RUN chmod +x legacy_script.py entrypoint.sh
 
-# Verify both Python versions are available
-RUN python2.7 --version && python3.12 --version && python --version
+# Verify Python 3.12 is default and Python 2.7 is accessible
+RUN python --version && python2.7 --version
 
-# Define the entrypoint - script will use its shebang for Python 2.7
-ENTRYPOINT ["./legacy_script.py"]
+# Define the delegating entrypoint
+ENTRYPOINT ["./entrypoint.sh"]
